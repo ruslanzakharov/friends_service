@@ -1,0 +1,237 @@
+openapi: 3.0.3
+info:
+  title: Django-сервис друзей
+  description: Сервис, который реализует функционал работы с друзьями в социальных сетях
+  version: 1.0.0
+servers:
+  - url: https://127.0.0.1:8000
+paths:
+  /user:
+    post:
+      tags:
+        - Пользователи
+      description:
+        Зарегистрировать нового пользователя
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserRequest'
+      responses:
+        201:
+          description:
+            Регистрация нового пользователя прошла успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description:
+            Невалидная схема документа или входные данные не верны
+        409:
+          description:
+            Данное имя пользователя уже существует
+  /user/{user_id}/friend/{friend_id}:
+    post:
+      tags:
+        - Друзья
+      description:
+        Отправить заявку в друзья
+      parameters:
+        - $ref: '#/components/parameters/user_id'
+        - $ref: '#/components/parameters/friend_id'
+      responses:
+        200:
+          description:
+            Запрос в друзья был успешно отправлен. 
+            Если другой пользователь тоже отправил заявку в друзья, то автоматически подтверждаем дружбу
+        400:
+          description:
+            Запрос сформирован некорректно
+        404:
+          description:
+            Один из пользователей в запросе не найден
+        409:
+          description:
+            Пользователь уже подал заявку в друзья этому пользователю
+    put:
+      tags:
+        - Друзья
+      description:
+        Принять либо отклонить заявку в друзья
+      parameters:
+        - $ref: '#/components/parameters/user_id'
+        - $ref: '#/components/parameters/friend_id'
+        - name: action
+          in: query
+          required: true
+          schema:
+            type: string
+            enum:
+              - accept
+              - reject
+          description:
+            Тип действия, принять или отклонить
+      responses:
+        200:
+          description:
+            Заявка в друзья принята / отклонена
+        400:
+          description:
+            Запрос сформирован некорректно
+        404:
+          description:
+            Один из пользователей в запросе не найден
+        409:
+          description:
+            Пользователь уже в друзьях либо заявки на дружбу нет
+    delete:
+      tags:
+        - Друзья
+      description:
+        Удалить пользователя из друзей
+      parameters:
+        - $ref: '#/components/parameters/user_id'
+        - $ref: '#/components/parameters/friend_id'
+      responses:
+        204:
+          description:
+            Пользователь удален из друзей
+        400:
+          description:
+            Запрос сформирован некорректно
+        404:
+          description:
+            Один из пользователей в запросе не найден
+        409:
+          description:
+            Пользователь не является другом
+    get:
+      tags:
+        - Друзья
+      description:
+        Получить статус дружбы с конкретным пользователем
+      parameters:
+        - $ref: '#/components/parameters/user_id'
+        - $ref: '#/components/parameters/friend_id'
+      responses:
+        200:
+          description:
+            Статус дружбы успешно отправлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Friend'
+        400:
+          description:
+            Запрос сформирован некорректно
+        404:
+          description:
+            Один из пользователей в запросе не найден
+  /user/{user_id}/friends:
+    get:
+      tags:
+        - Друзья
+      description:
+        Получить список входящих / исходящих заявок, друзей
+      parameters:
+        - $ref: '#/components/parameters/user_id'
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum:
+              - incoming
+              - outcoming
+              - friends
+          description:
+            Статус дружбы с пользователями
+      responses:
+        200:
+          description:
+            Список пользователей успешно отправлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Friends'
+        400:
+          description:
+            Запрос сформирован некорректно
+        404:
+          description:
+            Пользователь не найден
+components:
+  parameters:
+    user_id:
+      name: user_id
+      in: path
+      description: uuid пользователя
+      required: true
+      schema:
+        type: string
+        format: uuid
+      example: '123e4567-e89b-12d3-a456-426614174000'
+    friend_id:
+      name: friend_id
+      in: path
+      description: uuid друга
+      required: true
+      schema:
+        type: string
+        format: uuid
+      example: 'f47ac10b-58cc-4372-a567-0e02b2c3d479'
+  schemas:
+    CreateUserRequest:
+      type: object
+      properties:
+        username:
+          type: string
+          description: Имя пользователя
+          nullable: false
+          example: 'pink_terminator2000'
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: uuid пользователя
+          nullable: false
+          example: '123e4567-e89b-12d3-a456-426614174000'
+        username:
+          type: string
+          description: Имя пользователя
+          nullable: false
+          example: 'pink_terminator2000'
+    Friend:
+      type: object
+      properties:
+        user_id:
+          type: string
+          format: uuid
+          description: uuid пользователя
+          nullable: false
+          example: '123e4567-e89b-12d3-a456-426614174000'
+        friend_id:
+          type: string
+          format: uuid
+          description: uuid друга
+          nullable: false
+          example: 'f47ac10b-58cc-4372-a567-0e02b2c3d479'
+        status:
+          type: string
+          enum:
+            - incoming
+            - outcoming
+            - friends
+            - none
+          description: |
+            статус дружбы с пользователем
+            - incoming - входящая заявка
+            - outcoming - исходящая заявка
+            - friends - пользователи друзья
+            - none - пользователи не взаимодействовали
+    Friends:
+      type: array
+      items:
+        $ref: '#/components/schemas/Friend'
