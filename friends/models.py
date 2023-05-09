@@ -11,7 +11,9 @@ class CustomUser(AbstractUser):
 
 class Friendship(models.Model):
     user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_friends')
-    friend_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='friend_users')
+    # related_name="+" отключает возможность получить пользователей по другу
+    # Так как семантически это некорректно
+    friend_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='+')
     status = models.CharField(
         max_length=30,
         choices=[(tag.name, tag.value) for tag in enums.FriendshipStatus]

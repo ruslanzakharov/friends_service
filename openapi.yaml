@@ -27,10 +27,7 @@ paths:
                 $ref: '#/components/schemas/User'
         400:
           description:
-            Невалидная схема документа или входные данные не верны
-        409:
-          description:
-            Данное имя пользователя уже существует
+            Невалидная схема документа или входные данные не корректны
   /user/{user_id}/friend/{friend_id}:
     post:
       tags:
