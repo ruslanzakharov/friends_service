@@ -235,4 +235,4 @@ components:
     Friendships:
       type: array
       items:
-        $ref: '#/components/schemas/Friend'
+        $ref: '#/components/schemas/Friendship'

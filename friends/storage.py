@@ -26,7 +26,7 @@ class FriendshipStorage:
     @staticmethod
     def create_friendship(
             user_id: UUID, friend_id: UUID, status: FriendshipStatus
-    ) -> Friendship | None:
+    ) -> Friendship:
         friendship = Friendship(
             user_id=user_id, friend_id=friend_id, status=status.value
         )

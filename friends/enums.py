@@ -9,6 +9,7 @@ class FriendshipStatus(enum.Enum):
     INCOMING = 'incoming'
     OUTCOMING = 'outcoming'
     FRIENDS = 'friends'
+    NONE = 'none'
 
     def reversed_status(self):
         if self.value == self.INCOMING.value:
@@ -17,6 +18,8 @@ class FriendshipStatus(enum.Enum):
             return self.INCOMING
         elif self.value == self.FRIENDS.value:
             return self.FRIENDS
+        elif self.value == self.NONE.value:
+            return self.NONE
 
 
 class FriendshipAction(enum.Enum):

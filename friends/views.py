@@ -146,11 +146,21 @@ class FriendshipView(APIView):
 
         friendship = FriendshipStorage.get_friendship(user_id, friend_id)
 
-        return Response(
+        if friendship is None:
+            return Response(
                     {
                         'user_id': user_id,
                         'friend_id': friend_id,
-                        'status': friendship.status
+                        'status': FriendshipStatus.NONE.value
                     },
                     status=status.HTTP_200_OK
-        )
+            )
+        else:
+            return Response(
+                        {
+                            'user_id': user_id,
+                            'friend_id': friend_id,
+                            'status': friendship.status
+                        },
+                        status=status.HTTP_200_OK
+            )
