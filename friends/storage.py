@@ -1,4 +1,5 @@
 from uuid import UUID
+from django.db.models import QuerySet
 
 from friends.models import CustomUser, Friendship
 from friends.enums import FriendshipStatus
@@ -61,3 +62,9 @@ class FriendshipStorage:
         )
         friendship.delete()
         friendship_reversed.delete()
+
+    @staticmethod
+    def get_friendships_by_status(
+            user: CustomUser, status: FriendshipStatus
+    ) -> QuerySet:
+        return user.friendships.filter(status=status.value)

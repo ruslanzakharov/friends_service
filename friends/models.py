@@ -10,7 +10,7 @@ class CustomUser(AbstractUser):
 
 
 class Friendship(models.Model):
-    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_friends')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='friendships')
     # related_name="+" отключает возможность получить пользователей по другу
     # Так как семантически это некорректно
     friend = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='+')

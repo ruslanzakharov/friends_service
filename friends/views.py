@@ -70,7 +70,13 @@ class FriendshipView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        action = request.query_params.get('action')
+        try:
+            action = FriendshipAction(request.query_params.get('action'))
+        except ValueError:
+            return Response(
+                {'message': 'Invalid action type specified'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         friendship = FriendshipStorage.get_friendship(user_id, friend_id)
 
@@ -80,7 +86,7 @@ class FriendshipView(APIView):
                 status=status.HTTP_409_CONFLICT
             )
         elif friendship.status == FriendshipStatus.INCOMING.value:
-            if action == FriendshipAction.ACCEPT.value:
+            if action == FriendshipAction.ACCEPT:
                 FriendshipStorage.change_status_to_friends(friendship=friendship)
                 return Response(
                     {
@@ -90,7 +96,7 @@ class FriendshipView(APIView):
                     },
                     status=status.HTTP_200_OK
                 )
-            elif action == FriendshipAction.REJECT.value:
+            elif action == FriendshipAction.REJECT:
                 FriendshipStorage.delete_friendship(friendship)
                 return Response(
                     {'message': 'Friend request rejected'}
@@ -164,3 +170,40 @@ class FriendshipView(APIView):
                         },
                         status=status.HTTP_200_OK
             )
+
+
+class FriendshipsView(APIView):
+    def get(self, request: Request, user_id: UUID) -> Response:
+        user = UserStorage.get_user_by_id(user_id)
+
+        if user is None:
+            return Response(
+                {'message': 'User does not exist'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        try:
+            f_status = FriendshipStatus(request.query_params.get('type'))
+        except ValueError:
+            return Response(
+                {'message': 'Incorrect friendship status specified'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        friendships = FriendshipStorage.get_friendships_by_status(
+            user, f_status
+        )
+
+        response_data = []
+        for friendship in friendships:
+            response_data.append(
+                {
+                    'user_id': user_id,
+                    'friend_id': friendship.friend_id,
+                    'status': friendship.status
+                },
+            )
+
+        return Response(
+            response_data,
+            status=status.HTTP_200_OK
+        )

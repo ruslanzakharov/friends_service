@@ -8,4 +8,5 @@ urlpatterns = [
         'user/<uuid:user_id>/friend/<uuid:friend_id>',
         views.FriendshipView.as_view()
     ),
+    path('user/<uuid:user_id>/friends', views.FriendshipsView.as_view())
 ]
