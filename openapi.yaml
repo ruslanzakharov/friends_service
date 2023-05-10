@@ -42,6 +42,10 @@ paths:
           description:
             Запрос в друзья был успешно отправлен. 
             Если другой пользователь тоже отправил заявку в друзья, то автоматически подтверждаем дружбу
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Friendship'
         400:
           description:
             Запрос сформирован некорректно
@@ -50,7 +54,7 @@ paths:
             Один из пользователей в запросе не найден
         409:
           description:
-            Пользователь уже подал заявку в друзья этому пользователю
+            Пользователь уже подал заявку в друзья этому пользователю либо уже являются друзьями
     put:
       tags:
         - Друзья
@@ -73,6 +77,10 @@ paths:
         200:
           description:
             Заявка в друзья принята / отклонена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Friendship'
         400:
           description:
             Запрос сформирован некорректно
@@ -118,7 +126,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Friend'
+                $ref: '#/components/schemas/Friendship'
         400:
           description:
             Запрос сформирован некорректно
@@ -150,7 +158,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Friends'
+                $ref: '#/components/schemas/Friendships'
         400:
           description:
             Запрос сформирован некорректно
@@ -200,7 +208,7 @@ components:
           description: Имя пользователя
           nullable: false
           example: 'pink_terminator2000'
-    Friend:
+    Friendship:
       type: object
       properties:
         user_id:
@@ -228,7 +236,7 @@ components:
             - outcoming - исходящая заявка
             - friends - пользователи друзья
             - none - пользователи не взаимодействовали
-    Friends:
+    Friendships:
       type: array
       items:
         $ref: '#/components/schemas/Friend'

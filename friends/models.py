@@ -10,10 +10,10 @@ class CustomUser(AbstractUser):
 
 
 class Friendship(models.Model):
-    user_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_friends')
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='user_friends')
     # related_name="+" отключает возможность получить пользователей по другу
     # Так как семантически это некорректно
-    friend_id = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='+')
+    friend = models.ForeignKey(CustomUser, on_delete=models.CASCADE, related_name='+')
     status = models.CharField(
         max_length=30,
         choices=[(tag.name, tag.value) for tag in enums.FriendshipStatus]
@@ -21,8 +21,8 @@ class Friendship(models.Model):
 
     class Meta:
         constraints = [
-            models.UniqueConstraint(fields=['user_id', 'friend_id'], name='unique_friendship')
+            models.UniqueConstraint(fields=['user', 'friend'], name='unique_friendship')
         ]
 
     def __str__(self):
-        return f'{self.user_id} и {self.friend_id} имеют статус {self.status}'
+        return f'{self.user} и {self.friend} имеют статус {self.status}'
