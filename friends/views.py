@@ -115,6 +115,11 @@ class FriendshipView(APIView):
 
         friendship = FriendshipStorage.get_friendship(user_id, friend_id)
 
+        if friendship is None:
+            return Response(
+                {'message': 'Users are not friends'},
+                status=status.HTTP_409_CONFLICT
+            )
         if friendship.status == FriendshipStatus.FRIENDS.value:
             FriendshipStorage.delete_friendship(friendship)
             return Response(
@@ -126,3 +131,26 @@ class FriendshipView(APIView):
                 {'message': 'Users are not friends'},
                 status=status.HTTP_409_CONFLICT
             )
+
+    def get(
+            self, request: Request, user_id: UUID, friend_id: UUID
+    ) -> Response:
+        user = UserStorage.get_user_by_id(user_id)
+        friend = UserStorage.get_user_by_id(friend_id)
+
+        if user is None or friend is None:
+            return Response(
+                {'message': 'At least one of the users does not exist'},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        friendship = FriendshipStorage.get_friendship(user_id, friend_id)
+
+        return Response(
+                    {
+                        'user_id': user_id,
+                        'friend_id': friend_id,
+                        'status': friendship.status
+                    },
+                    status=status.HTTP_200_OK
+        )
