@@ -39,14 +39,12 @@ class FriendshipStorage:
 
         return friendship
 
-    @staticmethod
-    def change_status_to_friends(
-            friendship: Friendship
-    ) -> Friendship:
+    @classmethod
+    def change_status_to_friends(cls, friendship: Friendship) -> Friendship:
         friendship.status = FriendshipStatus.FRIENDS.value
 
-        friendship_reversed = Friendship.objects.get(
-                user_id=friendship.friend_id, friend_id=friendship.user_id
+        friendship_reversed = cls.get_friendship(
+            friendship.friend_id, friendship.user_id
         )
         friendship_reversed.status = FriendshipStatus.FRIENDS.value
 
@@ -55,3 +53,11 @@ class FriendshipStorage:
         )
 
         return friendship
+
+    @staticmethod
+    def delete_friendship(friendship: Friendship) -> None:
+        friendship_reversed = Friendship.objects.get(
+            user_id=friendship.friend_id, friend_id=friendship.user_id
+        )
+        friendship.delete()
+        friendship_reversed.delete()

@@ -77,10 +77,6 @@ paths:
         200:
           description:
             Заявка в друзья принята / отклонена
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Friendship'
         400:
           description:
             Запрос сформирован некорректно
