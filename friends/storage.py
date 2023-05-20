@@ -5,15 +5,6 @@ from friends.models import CustomUser, Friendship
 from friends.enums import FriendshipStatus
 
 
-class UserStorage:
-    @staticmethod
-    def get_user_by_id(user_id: UUID) -> CustomUser | None:
-        try:
-            return CustomUser.objects.get(id=user_id)
-        except CustomUser.DoesNotExist:
-            return None
-
-
 class FriendshipStorage:
     @staticmethod
     def get_friendship(user_id: UUID, friend_id: UUID) -> Friendship | None:
